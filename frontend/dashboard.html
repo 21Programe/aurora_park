@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Aurora Park</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #09111d;
+            color: #f1f5fb;
+            padding: 30px;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: linear-gradient(180deg, #101a2b, #0b1320);
+            border: 1px solid #1f3048;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .card h2 {
+            margin: 0 0 10px;
+            font-size: 1rem;
+            color: #92b9ff;
+        }
+
+        .card span {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .box {
+            background: #0d1727;
+            border: 1px solid #1f3048;
+            border-radius: 18px;
+            padding: 20px;
+        }
+
+        button {
+            background: linear-gradient(90deg, #1f7cff, #00c2ff);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 18px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            color: #a9d7ff;
+        }
+    </style>
+</head>
+<body>
+    <h1>📊 Dashboard Operacional</h1>
+
+    <button onclick="carregarDashboard()">Atualizar Métricas</button>
+
+    <div class="cards">
+        <div class="card">
+            <h2>Clientes</h2>
+            <span id="clientes">0</span>
+        </div>
+        <div class="card">
+            <h2>Veículos</h2>
+            <span id="veiculos">0</span>
+        </div>
+        <div class="card">
+            <h2>Ativos</h2>
+            <span id="ativos">0</span>
+        </div>
+        <div class="card">
+            <h2>Finalizados</h2>
+            <span id="finalizados">0</span>
+        </div>
+    </div>
+
+    <div class="box">
+        <h2>Resposta bruta do sistema</h2>
+        <pre id="debug">Sem dados carregados.</pre>
+    </div>
+
+    <script>
+        async function carregarDashboard() {
+            const debug = document.getElementById("debug");
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/movimentacoes/dashboard");
+                const data = await response.json();
+
+                document.getElementById("clientes").textContent = data.clientes;
+                document.getElementById("veiculos").textContent = data.veiculos;
+                document.getElementById("ativos").textContent = data.movimentacoes_ativas;
+                document.getElementById("finalizados").textContent = data.movimentacoes_finalizadas;
+                debug.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                debug.textContent = "Erro ao carregar dashboard: " + error;
+            }
+        }
+
+        carregarDashboard();
+    </script>
+</body>
+</html>

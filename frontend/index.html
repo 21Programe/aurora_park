@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora Park System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #07111f, #0f1f38);
+            color: #f4f7fb;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 720px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #b6c2d1;
+            margin-bottom: 25px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        input, textarea, button {
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 1rem;
+        }
+
+        input, textarea {
+            background: #101c30;
+            color: #ffffff;
+            border: 1px solid #24344d;
+        }
+
+        button {
+            background: linear-gradient(90deg, #1f7cff, #00c2ff);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            opacity: 0.95;
+        }
+
+        .response {
+            margin-top: 20px;
+            background: #0a1628;
+            border: 1px solid #20324e;
+            border-radius: 14px;
+            padding: 15px;
+            white-space: pre-wrap;
+            color: #9fd6ff;
+            min-height: 80px;
+        }
+
+        .links {
+            margin-top: 20px;
+        }
+
+        .links a {
+            color: #7bd9ff;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚗 Aurora Park System</h1>
+        <p>Registro rápido de entrada de veículos com interface elegante e operação em tempo real.</p>
+
+        <div class="grid">
+            <input type="text" id="placa" placeholder="Digite a placa do veículo">
+            <textarea id="observacao" rows="4" placeholder="Observação opcional"></textarea>
+            <button onclick="registrarEntrada()">Registrar Entrada</button>
+        </div>
+
+        <div class="response" id="saida">Aguardando operação...</div>
+
+        <div class="links">
+            <a href="dashboard.html">Abrir Dashboard</a>
+        </div>
+    </div>
+<div style="margin-top: 20px;">
+    <h3 style="color: #7bd9ff; font-size: 0.9rem; margin-bottom: 10px;">📡 AURORA LIVE FEED</h3>
+    <div id="terminal-aurora" style="background: #050b15; border: 1px solid #1f3048; border-radius: 12px; padding: 15px; height: 150px; overflow-y: auto; font-family: 'Consolas', monospace; font-size: 0.85rem; color: #4ade80;">
+        <div style="color: #6366f1;">> Aguardando conexão com o núcleo...</div>
+    </div>
+</div>
+    <script>
+        async function registrarEntrada() {
+            const placa = document.getElementById("placa").value;
+            const observacao = document.getElementById("observacao").value;
+            const saida = document.getElementById("saida");
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/movimentacoes/entrada", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ placa, observacao })
+                });
+
+                const data = await response.json();
+                saida.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                saida.textContent = "Erro ao comunicar com o backend: " + error;
+            }
+        }
+        // Conexão com a Aurora Realtime
+const terminal = document.getElementById("terminal-aurora");
+const socket = new WebSocket('ws://127.0.0.1:8765');
+
+function logAurora(msg) {
+    const p = document.createElement("div");
+    p.textContent = `> ${msg}`;
+    terminal.appendChild(p);
+    terminal.scrollTop = terminal.scrollHeight; // Auto-scroll
+}
+
+socket.onopen = () => logAurora("CONEXÃO ESTABELECIDA COM O NÚCLEO ANALÍTICO.");
+socket.onmessage = (event) => logAurora(event.data);
+socket.onerror = (error) => logAurora("ERRO DE CONEXÃO: NÚCLEO OFFLINE.");
+    </script>
+</body>
+</html>

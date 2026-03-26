@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+
+# Banco de Dados (Não queremos subir o seu DB de teste)
+*.db
+*.sqlite3
+
+# Ambientes e Segredos
+.env
+.vscode/
